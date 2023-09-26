@@ -1,0 +1,31 @@
+name: SharpImpersonation
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        repository: eladshamir/Whisker
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.2.0
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1
+ 
+    - name: Restore NuGet Packages
+      run: nuget restore Whisker.sln
+ 
+    - name: Build solution
+      run: msbuild Whisker.sln -t:rebuild -property:Configuration=Release
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: SharpImpersonation
+        path: ${{github.workspace}}\Whisker\bin\Release\SharpImpersonation.exe
